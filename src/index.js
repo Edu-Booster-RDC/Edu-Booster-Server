@@ -14,6 +14,12 @@ app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "🚀 Server is running! Welcome to Edu-Booster API.",
+  });
+});
+
 // error handling
 app.use(notFound);
 app.use(errorHandler);
