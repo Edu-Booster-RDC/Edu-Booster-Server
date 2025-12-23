@@ -335,9 +335,10 @@ const forgotPassword = async (req, res, next) => {
     const resetToken = generateRandomToken(32);
     const saltRounds = 10;
     const hashedToken = await bcrypt.hash(resetToken, saltRounds);
+    const expiration = generateExpiration(5);
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = generateExpiration(5);
+    user.resetPasswordExpires = expiration;
     await user.save();
 
     const resetUrl = `${
