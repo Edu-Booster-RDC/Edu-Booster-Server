@@ -540,7 +540,6 @@ const getCurrentUser = async (req, res, next) => {
   }
 };
 
-// Send a verification code to the new email
 const requestEmailChange = async (req, res, next) => {
   try {
     await connectDB();
