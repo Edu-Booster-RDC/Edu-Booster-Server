@@ -7,6 +7,10 @@ const {
   resetPasswordLink,
   passwordReseted,
 } = require("../templates/resetPassword");
+const {
+  sendActivateAccountEmail,
+  sendDisactivateAccountEmail,
+} = require("../templates/isActive");
 
 const sendCode = async (to, code, name) => {
   await transporter.sendMail({
@@ -44,12 +48,21 @@ const sendPasswordReseted = async (to, name) => {
   });
 };
 
-const sendNewPasswordtoUser = async (to, name) => {
+const sendAccountActivated = async (to, name) => {
   await transporter.sendMail({
     from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
     to,
-    subject: "Mot de passe réinitialisé",
-    html: passwordReseted(name),
+    subject: "Votre compte a été activé",
+    html: sendActivateAccountEmail(name),
+  });
+};
+
+const sendAccountDeactivated = async (to, name) => {
+  await transporter.sendMail({
+    from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Votre compte a été désactivé",
+    html: sendDisactivateAccountEmail(name),
   });
 };
 
@@ -58,4 +71,6 @@ module.exports = {
   sendNewCode,
   sendResetPasswordLink,
   sendPasswordReseted,
+  sendAccountActivated,
+  sendAccountDeactivated,
 };
