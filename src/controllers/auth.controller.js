@@ -447,7 +447,7 @@ const resetPasswordLoggedIn = async (req, res, next) => {
     await connectDB();
 
     const { currentPassword, newPassword, newPasswordConfirm } = req.body;
-    const userId = req.user._id; // set by auth middleware
+    const userId = req.user?.userId;
 
     if (!currentPassword || !newPassword || !newPasswordConfirm) {
       return next(new HttpError("Tous les champs sont requis", 422));
