@@ -338,7 +338,7 @@ const forgotPassword = async (req, res, next) => {
     const expiration = generateExpiration(5);
 
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpires = expiration;
+    user.resetPasswordTokenExpiration = expiration;
     await user.save();
 
     const resetUrl = `${
