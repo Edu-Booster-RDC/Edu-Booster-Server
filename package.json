@@ -1,0 +1,25 @@
+{
+  "name": "edu-booster-api",
+  "version": "1.1.1",
+  "description": "\"for all edu booster frontend\"",
+  "keywords": [
+    "\"schools\""
+  ],
+  "license": "ISC",
+  "author": "Balekage Gael (edu booster dev)",
+  "type": "commonjs",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
