@@ -7,6 +7,7 @@ const {
   sendCode,
   sendNewCode,
   sendResetPasswordLink,
+  sendPasswordReseted,
 } = require("../services/sendMails");
 const connectDB = require("../config/db");
 const jwt = require("jsonwebtoken");
