@@ -3,6 +3,10 @@ const {
   verificationCodeTemplate,
   newVerificationCodeTemplate,
 } = require("../templates/sendVerificationCode");
+const {
+  resetPasswordLink,
+  passwordReseted,
+} = require("../templates/resetPassword");
 
 const sendCode = async (to, code, name) => {
   await transporter.sendMail({
@@ -22,7 +26,36 @@ const sendNewCode = async (to, code, name) => {
   });
 };
 
+const sendResetPasswordLink = async (to, resetUrl, name) => {
+  await transporter.sendMail({
+    from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Mot de passe oublié",
+    html: resetPasswordLink(resetUrl, name),
+  });
+};
+
+const sendPasswordReseted = async (to, name) => {
+  await transporter.sendMail({
+    from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Mot de passe réinitialisé",
+    html: passwordReseted(name),
+  });
+};
+
+const sendNewPasswordtoUser = async (to, name) => {
+  await transporter.sendMail({
+    from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Mot de passe réinitialisé",
+    html: passwordReseted(name),
+  });
+};
+
 module.exports = {
   sendCode,
   sendNewCode,
+  sendResetPasswordLink,
+  sendPasswordReseted,
 };

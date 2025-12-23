@@ -1,25 +1,32 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  role: { type: String, enum: ["admin", "student"], default: "student" },
-  password: { type: String, required: true },
-  isActive: { type: Boolean, default: true },
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    role: { type: String, enum: ["admin", "student"], default: "student" },
+    password: { type: String, required: true },
+    isActive: { type: Boolean, default: true },
 
-  phone: { type: String },
-  phoneCode: { type: String },
-  phoneCodeExpiration: { type: Date },
-  isPhoneVerified: { type: Boolean, default: false },
+    phone: { type: String },
+    phoneCode: { type: String },
+    phoneCodeExpiration: { type: Date },
+    isPhoneVerified: { type: Boolean, default: false },
 
-  emailCode: { type: String },
-  emailCodeExpiration: { type: Date },
-  isEmailVerified: { type: Boolean, default: false },
+    emailCode: { type: String },
+    emailCodeExpiration: { type: Date },
+    isEmailVerified: { type: Boolean, default: false },
 
-  resetPasswordToken: { type: String },
-  resetPasswordTokenExpiration: { type: Date },
+    pendingEmail: { type: String },
+    pendingEmailCode: { type: String },
+    pendingEmailCodeExpiration: { type: Date },
 
-  refreshToken: { type: String },
-});
+    resetPasswordToken: { type: String },
+    resetPasswordTokenExpiration: { type: Date },
+
+    refreshToken: { type: String },
+  },
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("User", userSchema);
