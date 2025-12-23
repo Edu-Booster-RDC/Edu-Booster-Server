@@ -4,9 +4,12 @@ const bcrypt = require("bcryptjs");
 const generateExpiration = require("../utils/codeExpiration");
 const { generateCode } = require("../utils/generatecode");
 const { sendCode } = require("../services/sendMails");
+const connectDB = require("../config/db");
 
 const createAccount = async (req, res, next) => {
   try {
+    await connectDB();
+
     const { name, email, role, password, password2 } = req.body;
     if (!name || !email || !role || !password || !password2) {
       return next(new HttpError("Fill in all fields", 422));
