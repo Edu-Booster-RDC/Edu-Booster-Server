@@ -2,7 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const { notFound, errorHandler } = require("./middlewares/errorHandlers");
 require("dotenv").config();
-const { connect } = require("mongoose");
+const connectDB = require("./config/db");
+
+connectDB();
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -16,12 +18,10 @@ app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(notFound);
 app.use(errorHandler);
 
-connect(process.env.MONGO_URI)
-  .then(
-    app.listen(port, () =>
-      console.log(`Server running on port: ${port}, and the db is connected`)
-    )
-  )
-  .catch((error) => {
-    console.log(error);
+if (process.env.NODE_ENV !== "production") {
+  app.listen(port, () => {
+    console.log(`Dev server running on port ${port}`);
   });
+}
+
+module.exports = app;

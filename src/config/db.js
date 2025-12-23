@@ -1,28 +1,34 @@
-const { PrismaClient } = require("@prisma/client");
+const mongoose = require("mongoose");
 
-const prisma = new PrismaClient({
-  log:
-    process.env.NODE_ENV === "development"
-      ? ["query", "error", "warn"]
-      : ["error"],
-});
+let cached = global.mongoose;
 
-const connectDB = async () => {
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectDB() {
   try {
-    await prisma.$connect();
-    console.log("Db connected via prisma");
+    if (cached.conn) return cached.conn;
+
+    if (!cached.promise) {
+      cached.promise = mongoose.connect(process.env.MONGO_URI, {
+        bufferCommands: false,
+      });
+    }
+
+    cached.conn = await cached.promise;
+    console.log("✅ MongoDB connected");
+
+    return cached.conn;
   } catch (error) {
-    console.error(`Database connection error: ${error.message}`);
-    process.exit(1);
+    cached.promise = null;
+
+    console.error("❌ MongoDB connection error:", error.message);
+
+    if (process.env.NODE_ENV !== "production") {
+      throw error;
+    }
   }
-};
+}
 
-const disconnectDB = async () => {
-  await prisma.$disconnect();
-};
-
-module.exports = {
-  prisma,
-  connectDB,
-  disconnectDB,
-};
+module.exports = connectDB;
