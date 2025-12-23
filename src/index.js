@@ -1,11 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { notFound, errorHandler } = require("./middlewares/errorHandlers");
-require("dotenv").config();
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
-
-connectDB();
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -27,10 +25,22 @@ app.use("/api/auth", authRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
-if (process.env.NODE_ENV !== "production") {
-  app.listen(port, () => {
-    console.log(`Dev server running on port ${port}`);
-  });
-}
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log("✅ MongoDB connected, starting server...");
+
+    if (process.env.NODE_ENV !== "production") {
+      app.listen(port, () => {
+        console.log(`Dev server running on port ${port}`);
+      });
+    }
+  } catch (err) {
+    console.error("❌ Failed to connect to MongoDB:", err.message);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 module.exports = app;
