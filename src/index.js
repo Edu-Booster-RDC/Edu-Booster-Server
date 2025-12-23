@@ -5,6 +5,7 @@ const cors = require("cors");
 const { notFound, errorHandler } = require("./middlewares/errorHandlers");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
+const usersRoutes = require("./routes/users.routes");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/users", usersRoutes)
 
 // error handling
 app.use(notFound);
