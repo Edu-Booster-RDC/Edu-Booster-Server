@@ -3,6 +3,7 @@ const cors = require("cors");
 const { notFound, errorHandler } = require("./middlewares/errorHandlers");
 require("dotenv").config();
 const connectDB = require("./config/db");
+const authRoutes = require("./routes/auth.routes");
 
 connectDB();
 
@@ -19,6 +20,8 @@ app.get("/", (req, res) => {
     message: "🚀 Server is running! Welcome to Edu-Booster API.",
   });
 });
+
+app.use("/api/auth", authRoutes);
 
 // error handling
 app.use(notFound);
