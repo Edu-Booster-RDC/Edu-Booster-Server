@@ -3,7 +3,7 @@ const {
   createAccount,
   verifyEmail,
   newVerificationCode,
-} = require("../controllers/user.controller");
+} = require("../controllers/auth.controller");
 
 const router = express.Router();
 
