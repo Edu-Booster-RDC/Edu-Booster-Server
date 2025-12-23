@@ -142,6 +142,7 @@ const newVerificationCode = async (req, res, next) => {
 
     user.emailCode = code;
     user.emailCodeExpiration = expiresAt;
+    user.isEmailVerified = false;
     await user.save();
 
     await sendNewCode(user.email, code, user.name);
