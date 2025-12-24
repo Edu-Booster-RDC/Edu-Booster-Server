@@ -4,7 +4,10 @@ const connectDB = require("../config/db");
 const { generateCode } = require("../utils/generatecode");
 const generateExpiration = require("../utils/codeExpiration");
 const sendSMS = require("../config/sms");
-const { sendAccountActivated, sendAccountDeactivated } = require("../services/sendMails");
+const {
+  sendAccountActivated,
+  sendAccountDeactivated,
+} = require("../services/sendMails");
 
 const updateUser = async (req, res, next) => {
   try {
@@ -52,7 +55,7 @@ const updateUser = async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.error("Update user error:", error);
+    console.error("Erreur lors de la mise à jour de l’utilisateur :", error);
     next(new HttpError("Échec de la mise à jour du profil", 500));
   }
 };
@@ -109,7 +112,7 @@ const verifyPhoneNumber = async (req, res, next) => {
     const { code } = req.body;
 
     if (!code) {
-      return next(new HttpError("Le code est requis", 422));
+      return next(new HttpError("Le code de vérification est requis", 422));
     }
 
     const user = await User.findById(userId);
@@ -245,10 +248,116 @@ const toggleUserActiveStatus = async (req, res, next) => {
   }
 };
 
+const getUsers = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    if (req.user?.role !== "admin") {
+      return next(new HttpError("Accès refusé", 403));
+    }
+
+    const loggedInUserId = req.user.userId;
+
+    const users = await User.find({
+      _id: { $ne: loggedInUserId },
+    }).select(
+      `
+      -password
+      -phoneCode
+      -phoneCodeExpiration
+      -emailCode
+      -emailCodeExpiration
+      -pendingEmail
+      -pendingEmailCode
+      -pendingEmailCodeExpiration
+      -resetPasswordToken
+      -resetPasswordTokenExpiration
+      -refreshToken
+      `
+    );
+
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    console.error(error);
+
+    return next(
+      new HttpError("Échec de la récupération des utilisateurs", 500)
+    );
+  }
+};
+
+const getUserById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return next(new HttpError("Utilisateur introuvable", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        phone: user.phone,
+        isPhoneVerified: user.isPhoneVerified,
+        isEmailVerified: user.isEmailVerified,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return next(
+      new HttpError("Échec de la récupération de l’utilisateur", 500)
+    );
+  }
+};
+
+const deleteUser = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    if (req.user?.role !== "admin") {
+      return next(new HttpError("Accès refusé", 403));
+    }
+
+    const { userId } = req.params;
+
+    if (userId === req.user.userId) {
+      new HttpError("Vous ne pouvez pas supprimer votre propre compte", 400);
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new HttpError("Utilisateur introuvable", 404));
+    }
+
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Utilisateur supprimé avec succès",
+    });
+  } catch (error) {
+    console.error(error);
+    return next(new HttpError("Échec de la suppression de l’utilisateur", 500));
+  }
+};
+
 module.exports = {
   updateUser,
   addPhoneNumber,
   toggleUserActiveStatus,
   verifyPhoneNumber,
   newPhoneCode,
+  getUsers,
+  getUserById,
+  deleteUser,
 };
