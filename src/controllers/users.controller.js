@@ -99,6 +99,107 @@ const addPhoneNumber = async (req, res, next) => {
     next(new HttpError("Échec de l’ajout du numéro de téléphone", 500));
   }
 };
+const verifyPhoneNumber = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    const userId = req.user?.userId;
+    const { code } = req.body;
+
+    if (!code) {
+      return next(new HttpError("Le code est requis", 422));
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new HttpError("Utilisateur introuvable", 404));
+    }
+
+    if (user.phoneCode !== code) {
+      return next(new HttpError("Code de vérification invalide", 422));
+    }
+
+    const now = new Date();
+    if (user.phoneCodeExpiration < now) {
+      return res.status(400).json({
+        error: "expired",
+        message: "Le code de vérification a expiré",
+        phone: user.phone,
+      });
+    }
+
+    user.phoneCode = undefined;
+    user.phoneCodeExpiration = undefined;
+    user.isPhoneVerified = true;
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Votre numéro de téléphone est maintenant vérifié",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        phone: user.phone,
+        isPhoneVerified: user.isPhoneVerified,
+        isEmailVerified: user.isEmailVerified,
+      },
+    });
+  } catch (error) {
+    console.error("Verify phone error:", error);
+    next(
+      new HttpError(
+        "Erreur lors de la vérification du numéro de téléphone",
+        500
+      )
+    );
+  }
+};
+
+const newPhoneCode = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    const userId = req.user?.userId;
+    if (!userId) {
+      return next(new HttpError("Utilisateur non authentifié", 401));
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(new HttpError("Utilisateur introuvable", 404));
+    }
+
+    const { code } = generateCode();
+    const expiresAt = generateExpiration(10);
+
+    user.phoneCode = code;
+    user.phoneCodeExpiration = expiresAt;
+    user.isPhoneVerified = false;
+
+    await user.save();
+
+    await sendSMS({
+      to: user.phone,
+      text: `Votre code de vérification est : ${code}`,
+    });
+
+    res.status(200).json({
+      message: `Code de vérification envoyé au numéro ${user.phone}`,
+      phone: user.phone,
+    });
+  } catch (error) {
+    console.error(error);
+    next(
+      new HttpError(
+        "Échec de la demande d’un nouveau code de vérification du numéro de téléphone",
+        500
+      )
+    );
+  }
+};
 
 const toggleUserActiveStatus = async (req, res, next) => {
   try {
@@ -146,4 +247,6 @@ module.exports = {
   updateUser,
   addPhoneNumber,
   toggleUserActiveStatus,
+  verifyPhoneNumber,
+  newPhoneCode,
 };
