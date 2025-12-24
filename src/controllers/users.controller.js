@@ -4,6 +4,7 @@ const connectDB = require("../config/db");
 const { generateCode } = require("../utils/generatecode");
 const generateExpiration = require("../utils/codeExpiration");
 const sendSMS = require("../config/sms");
+const { sendAccountActivated, sendAccountDeactivated } = require("../services/sendMails");
 
 const updateUser = async (req, res, next) => {
   try {
@@ -99,6 +100,7 @@ const addPhoneNumber = async (req, res, next) => {
     next(new HttpError("Échec de l’ajout du numéro de téléphone", 500));
   }
 };
+
 const verifyPhoneNumber = async (req, res, next) => {
   try {
     await connectDB();
