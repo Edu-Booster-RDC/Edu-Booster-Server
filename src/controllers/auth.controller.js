@@ -25,9 +25,9 @@ const createAccount = async (req, res, next) => {
   try {
     await connectDB();
 
-    const { name, email, role, password, password2 } = req.body;
+    const { name, email, role, password } = req.body;
 
-    if (!name || !email || !role || !password || !password2) {
+    if (!name || !email || !role || !password) {
       return next(new HttpError("Veuillez remplir tous les champs", 422));
     }
 
@@ -36,10 +36,6 @@ const createAccount = async (req, res, next) => {
     const existingUser = await User.findOne({ email: newEmail });
     if (existingUser) {
       return next(new HttpError("Cet email est déjà utilisé", 422));
-    }
-
-    if (password !== password2) {
-      return next(new HttpError("Les mots de passe ne correspondent pas", 422));
     }
 
     const salt = await bcrypt.genSalt(12);
