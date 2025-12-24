@@ -1,4 +1,4 @@
-const User = require("express");
+const User = require("../models/");
 const HttpError = require("../models/error");
 const connectDB = require("../config/db");
 const { generateCode } = require("../utils/generatecode");
@@ -14,25 +14,28 @@ const updateUser = async (req, res, next) => {
       return next(new HttpError("Utilisateur non authentifié", 401));
     }
 
-    const { name, email } = req.body;
+    const { name } = req.body;
 
     const updates = {};
-    if (name) updates.name = name;
-    if (email) updates.email = email;
+    if (name) updates.name = name.trim();
 
     if (Object.keys(updates).length === 0) {
       return next(new HttpError("Aucune donnée valide à mettre à jour", 400));
     }
 
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $set: updates },
-      { new: true, runValidators: true }
-    ).select("-password -refreshToken");
-
-    if (!updatedUser) {
+    const user = await User.findById(userId);
+    if (!user) {
       return next(new HttpError("Utilisateur introuvable", 404));
     }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      user.id,
+      { $set: updates },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     res.status(200).json({
       message: "Profil mis à jour avec succès",
