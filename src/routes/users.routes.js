@@ -27,6 +27,6 @@ router.patch(
   toggleUserActiveStatus
 );
 router.get("/admin/users/find", auth, role("admin"), getUsers);
-router.delete("/admin/users/delete", auth, role("admin"), deleteUser);
+router.delete("/admin/users/delete/:userId", auth, role("admin"), deleteUser);
 
 module.exports = router;
