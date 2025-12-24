@@ -39,6 +39,7 @@ const updateUser = async (req, res, next) => {
       user: updatedUser,
     });
   } catch (error) {
+    console.error("Update user error:", error);
     next(new HttpError("Échec de la mise à jour du profil", 500));
   }
 };
