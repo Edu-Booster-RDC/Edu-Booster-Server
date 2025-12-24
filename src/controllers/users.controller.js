@@ -39,7 +39,16 @@ const updateUser = async (req, res, next) => {
 
     res.status(200).json({
       message: "Profil mis à jour avec succès",
-      user: updatedUser,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isActive: user.isActive,
+        phone: user.phone,
+        isPhoneVerified: user.isPhoneVerified,
+        isEmailVerified: user.isEmailVerified,
+      },
     });
   } catch (error) {
     console.error("Update user error:", error);
