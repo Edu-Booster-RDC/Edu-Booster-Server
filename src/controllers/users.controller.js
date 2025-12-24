@@ -1,4 +1,4 @@
-const User = require("../models/");
+const User = require("../models/user");
 const HttpError = require("../models/error");
 const connectDB = require("../config/db");
 const { generateCode } = require("../utils/generatecode");
