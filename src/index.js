@@ -7,13 +7,39 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
 
+const allowedOrigins = [
+  "http://localhost:5000",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:19006",
+  "https://edubooster.org",
+  "https://accounts.edubooster.org",
+  "exp://*",
+];
+
 const app = express();
 const port = process.env.PORT || 8080;
 
 // middlewares
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      console.log("CORS - Origin:", origin);
+
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin) || origin.startsWith("exp://")) {
+        return callback(null, true);
+      }
+
+      console.log("Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
@@ -23,7 +49,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/users", usersRoutes)
+app.use("/api/users", usersRoutes);
 
 // error handling
 app.use(notFound);
