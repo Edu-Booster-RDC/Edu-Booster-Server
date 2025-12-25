@@ -82,12 +82,12 @@ const verifyEmail = async (req, res, next) => {
     const { code } = req.body;
 
     if (!code) {
-      return next(new HttpError("Le code de vérification sont requis", 422));
+      return next(new HttpError("Le code de vérification est requis", 422));
     }
 
     const user = await User.findOne({ emailCode: code });
     if (!user) {
-      return next(new HttpError("Utilisateur introuvable", 404));
+      return next(new HttpError("Code Invalid", 404));
     }
 
     const now = new Date();
