@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const HttpError = require("../models/error");
 const connectDB = require("../config/db");
+const Province = require("../models/province");
 const { generateCode } = require("../utils/generatecode");
 const generateExpiration = require("../utils/codeExpiration");
 const sendSMS = require("../config/sms");
@@ -351,6 +352,54 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const selectProvince = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    const userId = req.user?.userId;
+    if (!userId) {
+      return next(new HttpError("Utilisateur non authentifié.", 401));
+    }
+
+    const { provinceId } = req.params;
+    if (!provinceId) {
+      return next(new HttpError("Aucun ID de province fourni.", 400));
+    }
+
+    const province = await Province.findById(provinceId);
+    if (!province) {
+      return next(new HttpError("Province sélectionnée introuvable.", 404));
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(
+        new HttpError("Utilisateur introuvable ou non authentifié.", 404)
+      );
+    }
+
+    user.province = province.id;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Province sélectionnée avec succès.",
+      province: {
+        id: province.id,
+        name: province.name,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur lors de la sélection de la province :", error);
+    return next(
+      new HttpError(
+        "Une erreur est survenue lors de la sélection de la province.",
+        500
+      )
+    );
+  }
+};
+
 module.exports = {
   updateUser,
   addPhoneNumber,
@@ -360,4 +409,5 @@ module.exports = {
   getUsers,
   getUserById,
   deleteUser,
+  selectProvince,
 };

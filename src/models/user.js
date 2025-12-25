@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema(
     resetPasswordTokenExpiration: { type: Date },
 
     refreshToken: { type: String },
+    province: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Province",
+    },
   },
   { timestamps: true }
 );

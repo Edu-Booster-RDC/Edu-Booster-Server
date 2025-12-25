@@ -10,6 +10,7 @@ const {
   getUsers,
   getUserById,
   deleteUser,
+  selectProvince,
 } = require("../controllers/users.controller");
 const router = express.Router();
 
@@ -18,6 +19,7 @@ router.patch("/me/phone", auth, addPhoneNumber);
 router.post("/me/verify-phone", auth, verifyPhoneNumber);
 router.post("/me/new-phone-code", auth, newPhoneCode);
 router.get("/me/:id", getUserById);
+router.get("/me/select-province/:provinceId", auth, selectProvince);
 
 // admin user routes
 router.patch(
