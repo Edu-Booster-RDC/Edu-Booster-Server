@@ -1,9 +1,11 @@
 const Province = require("../models/province");
 const User = require("../models/user");
 const HttpError = require("../models/error");
+const connectDB = require("../config/db");
 
 const addProvince = async (req, res, next) => {
   try {
+    await connectDB();
     const userId = req.user?.userId;
     const { name, country } = req.body;
 
@@ -46,6 +48,7 @@ const addProvince = async (req, res, next) => {
 
 const getProvinces = async (req, res, next) => {
   try {
+    await connectDB();
     const provinces = await Province.find();
 
     res.status(200).json({
@@ -66,9 +69,10 @@ const getProvinces = async (req, res, next) => {
 
 const getProvinceById = async (req, res, next) => {
   try {
+    await connectDB();
     const { id } = req.params;
 
-    const province = await Province.findById(id)
+    const province = await Province.findById(id);
     if (!province) {
       return next(new HttpError("Province not found", 404));
     }
@@ -91,6 +95,7 @@ const getProvinceById = async (req, res, next) => {
 // Update a province
 const updateProvince = async (req, res, next) => {
   try {
+    await connectDB();
     const { id } = req.params;
     const { name, country } = req.body;
 
@@ -123,6 +128,7 @@ const updateProvince = async (req, res, next) => {
 // Delete a province
 const deleteProvince = async (req, res, next) => {
   try {
+    await connectDB();
     const { id } = req.params;
 
     const province = await Province.findById(id);

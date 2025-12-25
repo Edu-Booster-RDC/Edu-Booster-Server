@@ -30,7 +30,6 @@ app.use(
     credentials: true,
   })
 );
-
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
