@@ -6,6 +6,7 @@ const { notFound, errorHandler } = require("./middlewares/errorHandlers");
 const connectDB = require("./config/db");
 const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
+const provinceRoutes = require("./routes/province.routes");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -23,8 +24,8 @@ app.use(
       "https://edubooster.org",
       "https://accounts.edubooster.org",
       "exp://*",
-      "http://localhost:8081", // Expo
-      "http://localhost:3000", // Web
+      "http://localhost:8081",
+      "http://localhost:3000",
     ],
     credentials: true,
   })
@@ -40,6 +41,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/province", provinceRoutes);
 
 // error handling
 app.use(notFound);
