@@ -131,12 +131,10 @@ const deleteProvince = async (req, res, next) => {
     await connectDB();
     const { id } = req.params;
 
-    const province = await Province.findById(id);
+    const province = await Province.findByIdAndDelete(id);
     if (!province) {
       return next(new HttpError("Province not found", 404));
     }
-
-    await province.remove();
 
     res.status(200).json({
       success: true,
