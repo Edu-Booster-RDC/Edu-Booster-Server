@@ -160,13 +160,15 @@ const login = async (req, res, next) => {
 
     const { email, password, stayLoggedIn } = req.body;
 
+    console.log("Body:", req.body);
+
     if (!email || !password) {
       return next(new HttpError("Identifiants invalides", 422));
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return next(new HttpError("Email ou mot de passe invalide", 401));
+      return next(new HttpError("Invalid email", 401));
     }
 
     if (!user.isActive) {
