@@ -160,15 +160,13 @@ const login = async (req, res, next) => {
 
     const { email, password, stayLoggedIn } = req.body;
 
-    console.log("Body:", req.body);
-
     if (!email || !password) {
       return next(new HttpError("Identifiants invalides", 422));
     }
 
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return next(new HttpError("Invalid email", 401));
+      return next(new HttpError("Email ou mot de passe invalide", 401));
     }
 
     if (!user.isActive) {
@@ -233,8 +231,8 @@ const login = async (req, res, next) => {
         isEmailVerified: user.isEmailVerified,
       },
     });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     next(new HttpError("Échec de la connexion", 500));
   }
 };
@@ -513,6 +511,7 @@ const getCurrentUser = async (req, res, next) => {
     const user = await User.findById(userId).select(
       "-password -refreshToken -resetPasswordToken -resetPasswordTokenExpiration"
     );
+
     if (!user) {
       return next(new HttpError("Utilisateur introuvable", 404));
     }
@@ -530,8 +529,8 @@ const getCurrentUser = async (req, res, next) => {
         isEmailVerified: user.isEmailVerified,
       },
     });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     next(
       new HttpError(
         "Impossible de récupérer les informations de l'utilisateur",
