@@ -29,10 +29,8 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Province",
     },
-    section: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Section",
-    },
+    section: { type: mongoose.Schema.Types.ObjectId, ref: "Section" },
+    subscription: { type: mongoose.Schema.Types.ObjectId, ref: "Subscription" },
   },
   { timestamps: true }
 );

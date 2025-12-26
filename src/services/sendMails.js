@@ -11,6 +11,11 @@ const {
   sendActivateAccountEmail,
   sendDisactivateAccountEmail,
 } = require("../templates/isActive");
+const {
+  sendNewSubscriptionToAdmin,
+  activationKeEmail,
+  sendNewSubscriptionKeyToAdmin,
+} = require("../templates/subscriptio");
 
 const sendCode = async (to, code, name) => {
   await transporter.sendMail({
@@ -66,6 +71,32 @@ const sendAccountDeactivated = async (to, name) => {
   });
 };
 
+const sendSubscription = async (to, userName, plan, key, date) => {
+  await transporter.sendMail({
+    from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Nouvelle souscription",
+    html: sendNewSubscriptionToAdmin(userName, plan, key, date),
+  });
+};
+const sendActivationKey = async (to, userName, key, date) => {
+  await transporter.sendMail({
+    from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Activation de votre compte",
+    html: activationKeEmail(userName, key, date),
+  });
+};
+
+const sendSubscriptionKey = async (userName, plan, key, date) => {
+  await transporter.sendMail({
+    from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: "Nouvelle demande de clé d'activation",
+    html: sendNewSubscriptionKeyToAdmin(userName, plan, key, date),
+  });
+};
+
 module.exports = {
   sendCode,
   sendNewCode,
@@ -73,4 +104,7 @@ module.exports = {
   sendPasswordReseted,
   sendAccountActivated,
   sendAccountDeactivated,
+  sendSubscription,
+  sendActivationKey,
+  sendSubscriptionKey
 };

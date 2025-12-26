@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Compte activé</title>
+    <title>Nouvelle demande de clé d'activation</title>
 
     <!-- Poppins Font -->
     <link
@@ -43,14 +43,25 @@
         <!-- Body -->
         <div style="padding: 30px; color: #000000">
           <h2 style="margin-top: 0; font-size: 20px; font-weight: 600">
-            Compte activé
+            Nouvelle demande de clé d'activation
           </h2>
 
-          <p style="font-size: 15px; line-height: 1.7">Bonjour, ${name},</p>
+          <p style="font-size: 15px; line-height: 1.7">Bonjour, Admin,</p>
 
           <p style="font-size: 15px; line-height: 1.7">
-            Votre compte EduBooster a été <strong>activé</strong>. Vous pouvez
-            maintenant accéder à la plateforme.
+            L'utilisateur <strong>${userName}</strong> a demandé une nouvelle
+            clé d'activation pour accéder à la plateforme EduBooster.
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7">
+            <strong>Plan :</strong> ${plan}<br />
+            <strong>Activation Key :</strong> ${key}<br />
+            <strong>Date d'expiration :</strong> ${formattedExpiration}
+          </p>
+
+          <p style="font-size: 15px; line-height: 1.7">
+            Veuillez envoyer cette clé à l'utilisateur pour lui permettre
+            d'activer son compte.
           </p>
         </div>
 
