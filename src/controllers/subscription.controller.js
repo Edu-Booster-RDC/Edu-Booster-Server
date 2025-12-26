@@ -333,20 +333,25 @@ const cancelSubscription = async (req, res, next) => {
       return next(new HttpError("Souscription non trouvée", 404));
     }
 
-    const user = await User.findByIdAndDelete(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return next(new HttpError("Utilisateur non trouvé", 404));
     }
 
+    // Vérifier que l'utilisateur est propriétaire ou admin
     if (subscription.user.toString() !== userId && user.role !== "admin") {
       return next(new HttpError("Action non autorisée", 403));
     }
 
+    // Supprimer la référence de souscription dans l'utilisateur
     const subscriptionOwner = await User.findById(subscription.user);
     if (subscriptionOwner) {
       subscriptionOwner.subscription = undefined;
       await subscriptionOwner.save();
     }
+
+    // Supprimer la souscription
+    await subscription.deleteOne();
 
     res.status(200).json({
       success: true,
