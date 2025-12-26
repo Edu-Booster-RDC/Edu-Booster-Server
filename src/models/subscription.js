@@ -51,11 +51,4 @@ const subscriptionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-subscriptionSchema.pre("save", function (next) {
-  if (this.endDate < new Date()) {
-    this.isActive = false;
-  }
-  next();
-});
-
 module.exports = mongoose.model("Subscription", subscriptionSchema);
