@@ -31,7 +31,7 @@ function generateRichTextPreview(questions) {
 
 const addCourse = async (req, res, next) => {
   try {
-    // 1️⃣ Connexion à la base de données
+    // 1️⃣ Connect to DB
     await connectDB();
 
     const { title, description, sections } = req.body;
@@ -43,7 +43,7 @@ const addCourse = async (req, res, next) => {
       return next(new HttpError("Utilisateur non authentifié", 404));
     }
 
-    // 2️⃣ Parser les sections (Postman envoie une chaîne JSON)
+    // 2️⃣ Parse sections (Postman may send a JSON string)
     let parsedSections = [];
     try {
       parsedSections = Array.isArray(sections)
@@ -53,7 +53,7 @@ const addCourse = async (req, res, next) => {
       return next(new HttpError("Les sections doivent être un tableau", 422));
     }
 
-    // 3️⃣ Vérification des champs requis
+    // 3️⃣ Required fields check
     if (!title || !description) {
       return next(new HttpError("Le titre et la description sont requis", 422));
     }
@@ -70,18 +70,17 @@ const addCourse = async (req, res, next) => {
       );
     }
 
-    // 4️⃣ Vérification que les sections existent
+    // 4️⃣ Verify sections exist
     const foundSections = await Section.find({ _id: { $in: parsedSections } });
     if (foundSections.length !== parsedSections.length) {
       return next(new HttpError("Section(s) invalide(s) sélectionnée(s)", 404));
     }
 
-    // 5️⃣ Vérification de l'unicité du cours
+    // 5️⃣ Check course uniqueness
     const existingCourse = await Course.findOne({
       title,
       sections: { $in: parsedSections },
     });
-
     if (existingCourse) {
       return next(
         new HttpError(
@@ -91,13 +90,13 @@ const addCourse = async (req, res, next) => {
       );
     }
 
-    // 6️⃣ Upload du PDF sur Cloudinary
+    // 6️⃣ Upload PDF to Cloudinary
     const uploadResult = await uploadPdfToCloudinary(
       pdf.buffer,
       `course-${Date.now()}`
     );
 
-    // 7️⃣ Création du cours
+    // 7️⃣ Create the course
     const course = await Course.create({
       title,
       description,
@@ -108,29 +107,24 @@ const addCourse = async (req, res, next) => {
     });
 
     // =========================
-    // 🤖 Génération des questions par IA
+    // 🤖 Generate questions via AI
     // =========================
 
-    // Vérifier que le dossier temporaire existe
-    const tempDir = path.join(__dirname, "../temp");
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
-
-    // Écrire le PDF dans le dossier temporaire
-    const tempPdfPath = path.join(tempDir, `${course._id}.pdf`);
+    // Use Vercel-compatible temp folder
+    const tempDir = "/tmp";
+    const tempPdfPath = path.join(tempDir, `${course._id}-${Date.now()}.pdf`);
     fs.writeFileSync(tempPdfPath, pdf.buffer);
 
-    // Appel du service IA pour générer les questions
+    // Call AI service
     const aiResult = await generateQuestionsFromPdf(tempPdfPath);
 
-    // Vérification de la réponse de l'IA
+    // Verify AI response
     if (!aiResult?.questions || !Array.isArray(aiResult.questions)) {
       fs.unlinkSync(tempPdfPath);
       throw new Error("Format de réponse IA invalide");
     }
 
-    // 8️⃣ Préparer les questions pour la base de données
+    // Prepare questions for DB
     const questionsToSave = aiResult.questions.map((q) => ({
       course: course._id,
       questionText: q.questionText,
@@ -141,21 +135,21 @@ const addCourse = async (req, res, next) => {
       topic: q.topic,
     }));
 
-    // 8.1️⃣ Générer un aperçu en texte riche pour l'admin
+    // Generate rich text preview
     const richTextPreview = generateRichTextPreview(aiResult.questions);
 
-    // 9️⃣ Sauvegarder les questions
+    // Save questions
     const savedQuestions = await Question.insertMany(questionsToSave);
 
-    // 10️⃣ Mettre à jour le cours avec l'aperçu et le nombre total de questions
+    // Update course with preview & question count
     course.questionsPreviewText = richTextPreview;
     course.totalQuestions = questionsToSave.length;
     await course.save();
 
-    // 11️⃣ Supprimer le PDF temporaire
+    // Delete temporary PDF
     fs.unlinkSync(tempPdfPath);
 
-    // 12️⃣ Répondre au client
+    // 12️⃣ Respond to client
     res.status(201).json({
       success: true,
       course,
