@@ -13,22 +13,31 @@ const addSection = async (req, res, next) => {
     const { provinceId } = req.params;
 
     if (!name || !provinceId) {
-      return next(new HttpError("Fill in all fields", 422));
+      return next(new HttpError("Veuillez remplir tous les champs", 422));
     }
 
-    const existingSection = await Section.findOne({ province: provinceId });
+    // Vérifier qu'il n'existe pas déjà une section avec le même nom dans la province
+    const existingSection = await Section.findOne({
+      name,
+      province: provinceId,
+    });
     if (existingSection) {
-      return next(new HttpError("The section already exists", 422));
+      return next(
+        new HttpError(
+          "Une section avec ce nom existe déjà dans cette province",
+          422
+        )
+      );
     }
 
     const user = await User.findById(userId);
     if (!user) {
-      return next(new HttpError("User not found", 404));
+      return next(new HttpError("Utilisateur non trouvé", 404));
     }
 
     const province = await Province.findById(provinceId);
     if (!province) {
-      return next(new HttpError("Province not found", 404));
+      return next(new HttpError("Province non trouvée", 404));
     }
 
     const section = new Section({
@@ -41,12 +50,12 @@ const addSection = async (req, res, next) => {
 
     res.status(201).json({
       success: true,
-      message: "The section has been added",
+      message: "La section a été ajoutée avec succès",
       section,
     });
   } catch (error) {
-    console.log("Error while adding section", error);
-    return next(new HttpError("Error while adding section", 500));
+    console.error("Erreur lors de l'ajout de la section", error);
+    return next(new HttpError("Erreur lors de l'ajout de la section", 500));
   }
 };
 
