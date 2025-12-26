@@ -31,6 +31,12 @@ const userSchema = new mongoose.Schema(
     },
     section: { type: mongoose.Schema.Types.ObjectId, ref: "Section" },
     subscription: { type: mongoose.Schema.Types.ObjectId, ref: "Subscription" },
+
+    stats: {
+      coursesCompleted: Number,
+      averageScore: Number,
+      predictedSuccessRate: Number,
+    },
   },
   { timestamps: true }
 );
