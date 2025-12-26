@@ -9,8 +9,10 @@ const {
   updateCourse,
   deleteCourse,
   getCourses,
+  startCourse,
 } = require("../controllers/cour.controller");
 const upload = require("../middlewares/uploadPdf");
+const { getNextQuestion } = require("../controllers/question.controller");
 const router = express.Router();
 
 router.post(
@@ -26,5 +28,8 @@ router.delete("/admin/delete/:courseId", auth, role("admin"), deleteCourse);
 router.get("/admin/", auth, role("admin"), getCourses);
 router.get("/sections/:sectionId", auth, getCoursesBySection);
 router.get("/:id", auth, getCoursesById);
+
+router.post("/:courseId/start", auth, startCourse);
+router.get("/:courseId/next-question", auth, getNextQuestion);
 
 module.exports = router;

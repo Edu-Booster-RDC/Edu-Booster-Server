@@ -9,6 +9,7 @@ const connectDB = require("../config/db");
 const Question = require("../models/question");
 const { generateQuestionsFromPdf } = require("../services/gemini.service");
 const mongoose = require("mongoose");
+const CourseProgress = require("../models/progress");
 
 function generateRichTextPreview(questions) {
   let html = `<h2>Aperçu des questions</h2>`;
@@ -345,6 +346,32 @@ const deleteCourse = async (req, res, next) => {
   }
 };
 
+const startCourse = async (req, res, next) => {
+  try {
+    await connectDB();
+    const userId = req.user.userId;
+    const { courseId } = req.params;
+
+    let progress = await CourseProgress.findOne({ userId, courseId });
+
+    if (!progress) {
+      progress = await CourseProgress.create({
+        userId,
+        courseId,
+        status: "in_progress",
+        startedAt: new Date(),
+        lastActivityAt: new Date(),
+        expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      });
+    }
+
+    res.json({ success: true, progress });
+  } catch (error) {
+    console.log("Error while trying to start a course:", error);
+    return next(new HttpError("Error while trying to start a course", 500));
+  }
+};
+
 module.exports = {
   addCourse,
   publishCourse,
@@ -353,4 +380,5 @@ module.exports = {
   getCoursesById,
   updateCourse,
   deleteCourse,
+  startCourse,
 };
