@@ -16,7 +16,7 @@ const addSection = async (req, res, next) => {
       return next(new HttpError("Fill in all fields", 422));
     }
 
-    const existingSection = await Section.findOne({ name });
+    const existingSection = await Section.findOne({ province: provinceId });
     if (existingSection) {
       return next(new HttpError("The section already exists", 422));
     }
