@@ -88,7 +88,7 @@ const sendActivationKey = async (to, userName, key, date) => {
   });
 };
 
-const sendSubscriptionKey = async (userName, plan, key, date) => {
+const sendSubscriptionKey = async (to, userName, plan, key, date) => {
   await transporter.sendMail({
     from: `"EduBooster Team" <${process.env.EMAIL_USER}>`,
     to,
@@ -106,5 +106,5 @@ module.exports = {
   sendAccountDeactivated,
   sendSubscription,
   sendActivationKey,
-  sendSubscriptionKey
+  sendSubscriptionKey,
 };
