@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth.routes");
 const usersRoutes = require("./routes/users.routes");
 const provinceRoutes = require("./routes/province.routes");
 const sectionRoutes = require("./routes/section.routes");
+const subscriptionRoutes = require("./routes/subscription.routes");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -43,6 +44,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/province", provinceRoutes);
 app.use("/api/section", sectionRoutes);
+app.use("/api/subscription", subscriptionRoutes);
 
 // error handling
 app.use(notFound);
