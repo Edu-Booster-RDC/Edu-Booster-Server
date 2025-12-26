@@ -11,6 +11,7 @@ const {
   getUserById,
   deleteUser,
   selectProvince,
+  selectSection,
 } = require("../controllers/users.controller");
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.post("/me/verify-phone", auth, verifyPhoneNumber);
 router.post("/me/new-phone-code", auth, newPhoneCode);
 router.get("/me/:id", getUserById);
 router.post("/me/select-province/:provinceId", auth, selectProvince);
+router.post("/me/select-section/:sectionId", auth, selectSection);
 
 // admin user routes
 router.patch(

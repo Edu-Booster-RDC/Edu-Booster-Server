@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const HttpError = require("../models/error");
+const Section = require("../models/sections");
 const connectDB = require("../config/db");
 const Province = require("../models/province");
 const { generateCode } = require("../utils/generatecode");
@@ -400,6 +401,54 @@ const selectProvince = async (req, res, next) => {
   }
 };
 
+const selectSection = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    const userId = req.user?.userId;
+    if (!userId) {
+      return next(new HttpError("Utilisateur non authentifié.", 401));
+    }
+
+    const { sectionId } = req.params;
+    if (!sectionId) {
+      return next(new HttpError("Aucun ID de section fourni.", 400));
+    }
+
+    const section = await Section.findById(sectionId);
+    if (!section) {
+      return next(new HttpError("Section sélectionnée introuvable.", 404));
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return next(
+        new HttpError("Utilisateur introuvable ou non authentifié.", 404)
+      );
+    }
+
+    user.section = section.id;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Section sélectionnée avec succès.",
+      province: {
+        id: section.id,
+        name: section.name,
+      },
+    });
+  } catch (error) {
+    console.error("Erreur lors de la sélection de la section :", error);
+    return next(
+      new HttpError(
+        "Une erreur est survenue lors de la sélection de la section.",
+        500
+      )
+    );
+  }
+};
+
 module.exports = {
   updateUser,
   addPhoneNumber,
@@ -410,4 +459,5 @@ module.exports = {
   getUserById,
   deleteUser,
   selectProvince,
+  selectSection,
 };
