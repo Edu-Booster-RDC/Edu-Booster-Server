@@ -94,8 +94,7 @@ const selectSubscription = async (req, res, next) => {
       message: "Souscription créée avec succès",
       subscription: {
         plan: subscription.plan,
-        activationKey,
-        activationKeyExpires,
+        id: subscription.id
       },
     });
   } catch (error) {
