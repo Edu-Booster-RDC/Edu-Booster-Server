@@ -94,7 +94,7 @@ const selectSubscription = async (req, res, next) => {
       message: "Souscription créée avec succès",
       subscription: {
         plan: subscription.plan,
-        id: subscription.id
+        id: subscription.id,
       },
     });
   } catch (error) {
@@ -333,12 +333,20 @@ const cancelSubscription = async (req, res, next) => {
       return next(new HttpError("Souscription non trouvée", 404));
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      return next(new HttpError("Utilisateur non trouvé", 404));
+    }
+
     if (subscription.user.toString() !== userId && user.role !== "admin") {
       return next(new HttpError("Action non autorisée", 403));
     }
 
-    await subscription.deleteOne();
+    const subscriptionOwner = await User.findById(subscription.user);
+    if (subscriptionOwner) {
+      subscriptionOwner.subscription = undefined;
+      await subscriptionOwner.save();
+    }
 
     res.status(200).json({
       success: true,
