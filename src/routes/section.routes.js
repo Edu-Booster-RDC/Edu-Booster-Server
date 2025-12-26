@@ -1,6 +1,14 @@
 const express = require("express");
 const auth = require("../middlewares/auth");
 const role = require("../middlewares/role");
+const {
+  addSection,
+  getSections,
+  getSectionsByProvince,
+  getSectionById,
+  updateSection,
+  deleteSection,
+} = require("../controllers/section.controller");
 const router = express.Router();
 
 router.post("/province/:provinceId", auth, role("admin"), addSection);
