@@ -23,6 +23,7 @@ const progressSchema = new mongoose.Schema(
     expiresAt: Date,
     answeredQuestions: { type: Number, default: 0 },
     correctAnswers: { type: Number, default: 0 },
+    allquestions: { type: Number, default: 0 },
     score: { type: Number, default: 0 },
   },
   { timestamps: true }

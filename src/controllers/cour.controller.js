@@ -378,6 +378,7 @@ const startCourse = async (req, res, next) => {
         userId,
         courseId,
         status: "in_progress",
+        allquestions: course.totalQuestions,
         startedAt: new Date(),
         lastActivityAt: new Date(),
         expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
