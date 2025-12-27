@@ -229,6 +229,10 @@ const login = async (req, res, next) => {
         phone: user.phone,
         isPhoneVerified: user.isPhoneVerified,
         isEmailVerified: user.isEmailVerified,
+        province: user.province,
+        section: user.section,
+        subscription: user.subscription,
+        stats: user.stats,
       },
     });
   } catch (err) {
@@ -527,6 +531,10 @@ const getCurrentUser = async (req, res, next) => {
         phone: user.phone,
         isPhoneVerified: user.isPhoneVerified,
         isEmailVerified: user.isEmailVerified,
+        province: user.province,
+        section: user.section,
+        subscription: user.subscription,
+        stats: user.stats,
       },
     });
   } catch (err) {
