@@ -10,6 +10,7 @@ const Question = require("../models/question");
 const { generateQuestionsFromPdf } = require("../services/gemini.service");
 const mongoose = require("mongoose");
 const CourseProgress = require("../models/progress");
+const Section = require("../models/sections");
 
 function generateRichTextPreview(questions) {
   let html = `<h2>Aperçu des questions</h2>`;
@@ -106,6 +107,11 @@ const addCourse = async (req, res, next) => {
       createdBy: user.id,
       status: "draft",
     });
+
+    await Section.updateMany(
+      { _id: { $in: parsedSections } },
+      { $addToSet: { courses: course._id } }
+    );
 
     // =========================
     // 🤖 Generate questions via AI
