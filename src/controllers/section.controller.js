@@ -77,7 +77,7 @@ const getSections = async (req, res, next) => {
     await connectDB();
 
     const sections = await Section.find()
-      .populate("province", "name")
+      .populate("provinces", "name") // 👈 array de provinces
       .populate("addedby", "name email");
 
     res.status(200).json({
@@ -98,7 +98,7 @@ const getSectionById = async (req, res, next) => {
     const { id } = req.params;
 
     const section = await Section.findById(id)
-      .populate("province", "name")
+      .populate("provinces", "name")
       .populate("addedby", "name email");
 
     if (!section) {
