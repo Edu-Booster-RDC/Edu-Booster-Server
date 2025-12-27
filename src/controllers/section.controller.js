@@ -9,24 +9,11 @@ const addSection = async (req, res, next) => {
     await connectDB();
 
     const userId = req.user?.userId;
-    const { name } = req.body;
-    const { provinceId } = req.params;
+    const { name, provinces } = req.body;
 
-    if (!name || !provinceId) {
-      return next(new HttpError("Veuillez remplir tous les champs", 422));
-    }
-
-    // Vérifier qu'il n'existe pas déjà une section avec le même nom dans la province
-    const existingSection = await Section.findOne({
-      name,
-      province: provinceId,
-    });
-    if (existingSection) {
+    if (!name || !provinces || !Array.isArray(provinces)) {
       return next(
-        new HttpError(
-          "Une section avec ce nom existe déjà dans cette province",
-          422
-        )
+        new HttpError("Veuillez fournir le nom et les provinces", 422)
       );
     }
 
@@ -35,26 +22,52 @@ const addSection = async (req, res, next) => {
       return next(new HttpError("Utilisateur non trouvé", 404));
     }
 
-    const province = await Province.findById(provinceId);
-    if (!province) {
-      return next(new HttpError("Province non trouvée", 404));
+    // Vérifier que toutes les provinces existent
+    const foundProvinces = await Province.find({
+      _id: { $in: provinces },
+    });
+
+    if (foundProvinces.length !== provinces.length) {
+      return next(
+        new HttpError("Une ou plusieurs provinces sont invalides", 404)
+      );
     }
 
-    const section = new Section({
+    // Chercher une section existante par nom
+    let section = await Section.findOne({ name });
+
+    if (section) {
+      // Ajouter uniquement les nouvelles provinces
+      const newProvinces = provinces.filter(
+        (p) => !section.provinces.includes(p)
+      );
+
+      section.provinces.push(...newProvinces);
+      await section.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Province(s) ajoutée(s) à la section existante",
+        section,
+      });
+    }
+
+    // Sinon créer une nouvelle section
+    section = new Section({
       name,
       addedby: user._id,
-      province: province._id,
+      provinces,
     });
 
     await section.save();
 
     res.status(201).json({
       success: true,
-      message: "La section a été ajoutée avec succès",
+      message: "Section créée avec succès",
       section,
     });
   } catch (error) {
-    console.error("Erreur lors de l'ajout de la section", error);
+    console.error(error);
     return next(new HttpError("Erreur lors de l'ajout de la section", 500));
   }
 };

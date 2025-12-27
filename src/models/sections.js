@@ -18,11 +18,13 @@ const sectionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    province: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Province",
-      required: true,
-    },
+    provinces: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Province",
+        required: true,
+      },
+    ],
   },
   {
     timestamps: true,

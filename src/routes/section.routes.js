@@ -11,7 +11,7 @@ const {
 } = require("../controllers/section.controller");
 const router = express.Router();
 
-router.post("/province/:provinceId", auth, role("admin"), addSection);
+router.post("/province/", auth, role("admin"), addSection);
 router.get("/", getSections);
 router.get("/province/:provinceId", getSectionsByProvince);
 router.get("/:id", getSectionById);

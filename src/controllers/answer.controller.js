@@ -15,13 +15,11 @@ const answerQuestion = async (req, res, next) => {
 
     const isCorrect = answer === question.correctAnswer;
 
-    // Prevent double answer
     const existing = await UserAnswer.findOne({ userId, questionId });
     if (existing) {
       return next(new HttpError("Question déjà répondue", 409));
     }
 
-    // Save answer
     await UserAnswer.create({
       userId,
       courseId: question.course,
@@ -31,7 +29,6 @@ const answerQuestion = async (req, res, next) => {
       timeSpentSeconds,
     });
 
-    // Save attempt
     const attempts = await QuestionAttempt.countDocuments({
       userId,
       questionId,
@@ -44,7 +41,6 @@ const answerQuestion = async (req, res, next) => {
       isCorrect,
     });
 
-    // Update progress
     const progress = await CourseProgress.findOne({
       userId,
       courseId: question.course,
