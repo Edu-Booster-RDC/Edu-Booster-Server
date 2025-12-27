@@ -364,6 +364,13 @@ const startCourse = async (req, res, next) => {
     const userId = req.user.userId;
     const { courseId } = req.params;
 
+    const course = await Course.findById(courseId);
+    if (!course || course.status !== "published") {
+      return next(
+        new HttpError("Ce cours n'est pas disponible pour le moment", 400)
+      );
+    }
+
     let progress = await CourseProgress.findOne({ userId, courseId });
 
     if (!progress) {
@@ -379,8 +386,8 @@ const startCourse = async (req, res, next) => {
 
     res.json({ success: true, progress });
   } catch (error) {
-    console.log("Error while trying to start a course:", error);
-    return next(new HttpError("Error while trying to start a course", 500));
+    console.log(error);
+    return next(new HttpError("Erreur lors du démarrage du cours", 500));
   }
 };
 
