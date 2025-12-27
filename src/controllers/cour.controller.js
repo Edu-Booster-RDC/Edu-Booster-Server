@@ -10,6 +10,7 @@ const Question = require("../models/question");
 const { generateQuestionsFromPdf } = require("../services/gemini.service");
 const mongoose = require("mongoose");
 const CourseProgress = require("../models/progress");
+const Notification = require("../models/notification");
 
 function generateRichTextPreview(questions) {
   let html = `<h2>Aperçu des questions</h2>`;
@@ -32,7 +33,6 @@ function generateRichTextPreview(questions) {
 
 const addCourse = async (req, res, next) => {
   try {
-    // 1️⃣ Connect to DB
     await connectDB();
 
     const { title, description, sections } = req.body;
@@ -192,6 +192,13 @@ const publishCourse = async (req, res, next) => {
     course.status = "published";
     course.publishedAt = new Date();
     await course.save();
+
+    await Notification.create({
+      userId: userId,
+      type: "message",
+      title: "Nouveau cours disponible 📚",
+      body: `Un nouveau cours intitulé "${course.title}" est maintenant disponible. Commencez votre apprentissage dès maintenant !`,
+    });
 
     res.status(200).json({
       success: true,
