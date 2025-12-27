@@ -3,6 +3,7 @@ const UserAnswer = require("../models/userAnswer");
 const QuestionAttempt = require("../models/questionAttempt");
 const CourseProgress = require("../models/progress");
 const HttpError = require("../models/error");
+const connectDB = require("../config/db");
 
 const answerQuestion = async (req, res, next) => {
   try {

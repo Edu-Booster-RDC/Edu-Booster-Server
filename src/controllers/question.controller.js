@@ -1,6 +1,7 @@
 const Question = require("../models/question");
 const UserAnswer = require("../models/userAnswer");
 const HttpError = require("../models/error");
+const connectDB = require("../config/db");
 
 const getNextQuestion = async (req, res, next) => {
   try {
