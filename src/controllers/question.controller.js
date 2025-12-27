@@ -4,6 +4,7 @@ const HttpError = require("../models/error");
 
 const getNextQuestion = async (req, res, next) => {
   try {
+    await connectDB();
     const userId = req.user?.userId;
     const { courseId } = req.params;
 

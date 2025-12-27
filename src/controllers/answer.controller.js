@@ -6,6 +6,7 @@ const HttpError = require("../models/error");
 
 const answerQuestion = async (req, res, next) => {
   try {
+    await connectDB();
     const userId = req.user?.userId;
     const { questionId } = req.params;
     const { answer, timeSpentSeconds } = req.body;
