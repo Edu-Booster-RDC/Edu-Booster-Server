@@ -56,8 +56,27 @@ const getFinshedCourses = async (req, res, next) => {
   } catch (error) {}
 };
 
+const getFinshedCourses2 = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    const userId = req.user?.userId;
+
+    const completedCourses = await CourseProgress.find({
+      userId,
+      status: "completed",
+    }).populate("courseId", "title");
+
+    res.status(200).json({
+      success: true,
+      complete: completedCourses,
+    });
+  } catch (error) {}
+};
+
 module.exports = {
   getProgress,
   getInProgress,
   getFinshedCourses,
+  getFinshedCourses2,
 };
