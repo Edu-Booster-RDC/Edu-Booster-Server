@@ -245,6 +245,7 @@ const getCoursesBySection = async (req, res, next) => {
 
     const courses = await Course.find({
       sections: sectionId,
+      status: "published",
     })
       .populate("sections", "name")
       .sort({ publishedAt: -1 });
