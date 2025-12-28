@@ -1,3 +1,4 @@
+const connectDB = require("../config/db");
 const HttpError = require("../models/error");
 const ExamPrediction = require("../models/prediction");
 const CourseProgress = require("../models/progress");
