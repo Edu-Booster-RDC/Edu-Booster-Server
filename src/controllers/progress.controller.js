@@ -23,12 +23,12 @@ const getInProgress = async (req, res, next) => {
       status: "in_progress",
     });
 
-    if (!inProgressCourse) {
-      return res.status(200).json({
-        success: true,
-        progress: null,
-      });
-    }
+    // if (!inProgressCourse) {
+    //   return res.status(200).json({
+    //     success: true,
+    //     progress: null,
+    //   });
+    // }
 
     res.status(200).json({
       success: true,
