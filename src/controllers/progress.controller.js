@@ -47,7 +47,7 @@ const getFinshedCourses = async (req, res, next) => {
     const completedCourses = await CourseProgress.find({
       userId,
       status: "completed",
-    }).populate("courseId", "title");
+    });
 
     res.status(200).json({
       success: true,
