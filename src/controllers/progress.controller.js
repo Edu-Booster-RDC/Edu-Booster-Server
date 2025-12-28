@@ -3,7 +3,7 @@ const CourseProgress = require("../models/progress");
 
 const getProgress = async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user?.userId;
     const { courseId } = req.params;
 
     const progress = await CourseProgress.findOne({ userId, courseId });
@@ -18,14 +18,14 @@ const getInProgress = async (req, res) => {
   try {
     const userId = req.user?.id;
 
-    if (!userId) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
-
     const inProgressCourses = await CourseProgress.find({
       userId,
       status: "in_progress",
     });
+
+    if (!inProgressCourses) {
+      return next(new HttpError("No current course"));
+    }
 
     res.status(200).json({
       success: true,
