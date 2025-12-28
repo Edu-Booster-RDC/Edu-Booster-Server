@@ -22,6 +22,7 @@ const answerQuestion = async (req, res, next) => {
       return next(new HttpError("Question déjà répondue", 409));
     }
 
+    // Save the user's answer
     await UserAnswer.create({
       userId,
       courseId: question.course,
@@ -31,6 +32,7 @@ const answerQuestion = async (req, res, next) => {
       timeSpentSeconds,
     });
 
+    // Record attempt
     const attempts = await QuestionAttempt.countDocuments({
       userId,
       questionId,
@@ -43,10 +45,14 @@ const answerQuestion = async (req, res, next) => {
       isCorrect,
     });
 
+    // Update course progress
     const progress = await CourseProgress.findOne({
       userId,
       courseId: question.course,
     });
+    if (!progress) {
+      return next(new HttpError("Progress introuvable", 404));
+    }
 
     progress.answeredQuestions += 1;
     if (isCorrect) progress.correctAnswers += 1;
@@ -56,12 +62,22 @@ const answerQuestion = async (req, res, next) => {
     );
 
     progress.lastActivityAt = new Date();
+
+    // ✅ Check if course is completed
+    const totalQuestions = await Question.countDocuments({
+      course: question.course,
+    });
+    if (progress.answeredQuestions >= totalQuestions) {
+      progress.status = "completed";
+    }
+
     await progress.save();
 
     res.json({
       correct: isCorrect,
       correctAnswer: isCorrect ? null : question.correctAnswer,
       explanation: question.explanation,
+      courseCompleted: progress.status === "completed",
     });
   } catch (error) {
     console.log("Error while answering the question:", error);
