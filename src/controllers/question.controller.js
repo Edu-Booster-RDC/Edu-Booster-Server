@@ -9,26 +9,29 @@ const getNextQuestion = async (req, res, next) => {
     const userId = req.user?.userId;
     const { courseId } = req.params;
 
+    // Find questions already answered by this user for this course
     const answered = await UserAnswer.find({ userId, courseId }).select(
       "questionId"
     );
     const answeredIds = answered.map((a) => a.questionId);
 
+    // Find next active question not yet answered
     const question = await Question.findOne({
       course: courseId,
       _id: { $nin: answeredIds },
       isActive: true,
     }).select("-correctAnswer");
 
+    // If no question left, return finished
     if (!question) {
       return res.status(200).json({
-        error: "finished",
         finished: true,
         message: "Vous avez terminé ce cours.",
       });
     }
 
-    res.json({ question });
+    // Return next question
+    res.json({ question, finished: false });
   } catch (error) {
     console.log("Error while getting the next question:", error);
     return next(new HttpError("Error while getting the next question", 500));
