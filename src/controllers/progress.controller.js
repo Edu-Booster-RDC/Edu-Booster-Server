@@ -23,8 +23,6 @@ const getInProgress = async (req, res, next) => {
 
     const userId = req.user?.userId;
 
-    console.log("UserId: ", userId);
-
     const inProgressCourse = await CourseProgress.findOne({
       userId,
       status: "in_progress",
@@ -40,7 +38,26 @@ const getInProgress = async (req, res, next) => {
   }
 };
 
+const getFinshedCourses = async (req, res, next) => {
+  try {
+    await connectDB();
+
+    const userId = req.user?.userId;
+
+    const completedCourses = await CourseProgress.find({
+      userId,
+      status: "completed",
+    });
+
+    res.status(200).json({
+      success: true,
+      complete: completedCourses,
+    });
+  } catch (error) {}
+};
+
 module.exports = {
   getProgress,
   getInProgress,
+  getFinshedCourses,
 };
