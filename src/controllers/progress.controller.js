@@ -14,26 +14,29 @@ const getProgress = async (req, res) => {
   }
 };
 
-const getInProgress = async (req, res) => {
+const getInProgress = async (req, res, next) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user.id;
 
-    const inProgressCourses = await CourseProgress.find({
+    const inProgressCourse = await CourseProgress.findOne({
       userId,
       status: "in_progress",
     });
 
-    if (!inProgressCourses) {
-      return next(new HttpError("No current course"));
+    if (!inProgressCourse) {
+      return res.status(200).json({
+        success: true,
+        progress: null,
+      });
     }
 
     res.status(200).json({
       success: true,
-      progress: inProgressCourses,
+      progress: inProgressCourse,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Server Error" });
+    return next(new HttpError("Erreur serveur", 500));
   }
 };
 
