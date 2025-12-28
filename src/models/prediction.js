@@ -7,16 +7,18 @@ const predictionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
+    courseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
+    },
     probability: {
       type: Number,
     },
-
     verdict: {
       type: String,
       enum: ["likely_pass", "uncertain", "likely_fail"],
     },
-
     factors: {
       averageScore: String,
       consistency: String,
