@@ -16,7 +16,7 @@ const getProgress = async (req, res) => {
 
 const getInProgress = async (req, res, next) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user?.id;
 
     const inProgressCourse = await CourseProgress.findOne({
       userId,
