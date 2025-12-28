@@ -3,6 +3,6 @@ const auth = require("../middlewares/auth");
 
 const router = require("express").Router();
 
-router.get("/generate", auth, generatePrediction);
+router.get("/:courseId/generate", auth, generatePrediction);
 
 module.exports = router;
