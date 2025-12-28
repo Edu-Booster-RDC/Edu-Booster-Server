@@ -21,7 +21,8 @@ const getNextQuestion = async (req, res, next) => {
     }).select("-correctAnswer");
 
     if (!question) {
-      return res.json({
+      return res.status(400).json({
+        error: "finished",
         finished: true,
         message: "You have completed this course",
       });
