@@ -12,6 +12,7 @@ const subscriptionRoutes = require("./routes/subscription.routes");
 const coursRoutes = require("./routes/courses.routes");
 const answerRoutes = require("./routes/question.routes");
 const progressRoutes = require("./routes/progress.routes");
+const predictionRoutes = require("./routes/prediction.routes");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -51,6 +52,7 @@ app.use("/api/subscription", subscriptionRoutes);
 app.use("/api/cours", coursRoutes);
 app.use("/api/answer", answerRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/prediction", predictionRoutes);
 
 // error handling
 app.use(notFound);

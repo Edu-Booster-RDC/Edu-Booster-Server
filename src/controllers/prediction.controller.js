@@ -1,12 +1,19 @@
 const ExamPrediction = require("../models/prediction");
 const CourseProgress = require("../models/progress");
 
-const generatePrediction = async () => {
+const generatePrediction = async (req, res, next) => {
   try {
+    await connectDB();
     const { courseId } = req.params;
-    const userId = req.body;
+    const userId = req.user?.userId;
 
     const progress = await CourseProgress.findOne({ userId, courseId });
+
+    if (!progress) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Course progress not found" });
+    }
 
     const probability = progress.score / 100;
 
@@ -17,8 +24,8 @@ const generatePrediction = async () => {
         ? "uncertain"
         : "likely_fail";
 
-    await ExamPrediction.findOneAndUpdate(
-      { userId },
+    const prediction = await ExamPrediction.findOneAndUpdate(
+      { userId, courseId },
       {
         probability,
         verdict,
@@ -29,13 +36,13 @@ const generatePrediction = async () => {
           helpUsageRate: "low",
         },
       },
-      { upsert: true }
+      { upsert: true, new: true } // return the updated doc
     );
+
+    res.status(200).json({ success: true, prediction });
   } catch (error) {
-    console.log("Error while generating your exam prediction:", error);
-    return next(
-      new HttpError("Error while generating your exam prediction", 500)
-    );
+    console.log("Error while generating prediction:", error);
+    return next(new HttpError("Error while generating prediction", 500));
   }
 };
 
