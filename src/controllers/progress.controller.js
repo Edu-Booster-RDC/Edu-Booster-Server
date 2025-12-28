@@ -1,8 +1,9 @@
 const connectDB = require("../config/db");
 const HttpError = require("../models/error");
 const CourseProgress = require("../models/progress");
+const mongoose = require("mongoose");
 
-const getProgress = async (req, res, next) => {
+const getProgress = async (req, res) => {
   try {
     await connectDB();
     const userId = req.user?.userId;
@@ -19,18 +20,15 @@ const getProgress = async (req, res, next) => {
 const getInProgress = async (req, res, next) => {
   try {
     await connectDB();
-    const userId = req.user?.id;
+
+    const userId = req.user?.userId;
+
+    console.log("UserId: ", userId);
 
     const inProgressCourse = await CourseProgress.findOne({
       userId,
+      status: "in_progress",
     });
-
-    // if (!inProgressCourse) {
-    //   return res.status(200).json({
-    //     success: true,
-    //     progress: null,
-    //   });
-    // }
 
     res.status(200).json({
       success: true,
