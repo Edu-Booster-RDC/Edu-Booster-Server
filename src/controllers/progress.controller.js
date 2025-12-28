@@ -1,9 +1,11 @@
+const connectDB = require("../config/db");
 const HttpError = require("../models/error");
 const CourseProgress = require("../models/progress");
 
 const getProgress = async (req, res) => {
   try {
-    const userId = req.user?.userId;
+    await connectDB();
+    const userId = req.user?.userId
     const { courseId } = req.params;
 
     const progress = await CourseProgress.findOne({ userId, courseId });
@@ -16,6 +18,7 @@ const getProgress = async (req, res) => {
 
 const getInProgress = async (req, res, next) => {
   try {
+    await connectDB();
     const userId = req.user?.id;
 
     const inProgressCourse = await CourseProgress.findOne({
