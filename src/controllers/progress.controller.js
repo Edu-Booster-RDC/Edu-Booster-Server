@@ -2,7 +2,7 @@ const connectDB = require("../config/db");
 const HttpError = require("../models/error");
 const CourseProgress = require("../models/progress");
 
-const getProgress = async (req, res) => {
+const getProgress = async (req, res, next) => {
   try {
     await connectDB();
     const userId = req.user?.userId;
