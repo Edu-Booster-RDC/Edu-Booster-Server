@@ -362,9 +362,10 @@ const deleteCourse = async (req, res, next) => {
 const startCourse = async (req, res, next) => {
   try {
     await connectDB();
-    const userId = req.user.userId;
+    const userId = req.user?.userId; // string from JWT
     const { courseId } = req.params;
 
+    // 1️⃣ Check if the course exists and is published
     const course = await Course.findById(courseId);
     if (!course || course.status !== "published") {
       return next(
@@ -372,19 +373,31 @@ const startCourse = async (req, res, next) => {
       );
     }
 
-    let progress = await CourseProgress.findOne({ userId, courseId });
+    // 2️⃣ Check if user already has a course in progress
+    const inProgress = await CourseProgress.findOne({
+      userId,
+      status: "in_progress",
+    });
 
-    if (!progress) {
-      progress = await CourseProgress.create({
-        userId,
-        courseId,
-        status: "in_progress",
-        allquestions: course.totalQuestions,
-        startedAt: new Date(),
-        lastActivityAt: new Date(),
-        expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      });
+    if (inProgress) {
+      return next(
+        new HttpError(
+          "Vous avez déjà un cours en cours. Terminez-le avant d'en démarrer un autre.",
+          400
+        )
+      );
     }
+
+    // 3️⃣ Create progress if no in-progress course exists
+    let progress = await CourseProgress.create({
+      userId,
+      courseId,
+      status: "in_progress",
+      allquestions: course.totalQuestions,
+      startedAt: new Date(),
+      lastActivityAt: new Date(),
+      expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days
+    });
 
     res.json({ success: true, progress });
   } catch (error) {
