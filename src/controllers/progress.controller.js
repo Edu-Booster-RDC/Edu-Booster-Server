@@ -5,7 +5,7 @@ const CourseProgress = require("../models/progress");
 const getProgress = async (req, res) => {
   try {
     await connectDB();
-    const userId = req.user?.userId
+    const userId = req.user?.userId;
     const { courseId } = req.params;
 
     const progress = await CourseProgress.findOne({ userId, courseId });
@@ -23,7 +23,6 @@ const getInProgress = async (req, res, next) => {
 
     const inProgressCourse = await CourseProgress.findOne({
       userId,
-      status: "in_progress",
     });
 
     // if (!inProgressCourse) {
