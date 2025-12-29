@@ -259,7 +259,6 @@ const activationKeEmail = (userName, key, date) => `<!DOCTYPE html>
           <!-- Activation key with copy button -->
           <div class="key-container">
             <span id="activationKey">${key}</span>
-            <button class="copy-btn" onclick="copyKey()">Copier</button>
           </div>
 
           <p style="font-size: 15px; line-height: 1.7">
