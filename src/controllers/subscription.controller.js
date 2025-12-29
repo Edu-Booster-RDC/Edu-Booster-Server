@@ -418,6 +418,31 @@ const renewSubscription = async (req, res, next) => {
   }
 };
 
+const deleteSubscription = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const subscription = await Subscription.findById(id);
+    if (!subscription) {
+      return next(new HttpError("Souscription non trouvée", 404));
+    }
+
+    if (subscription.user) {
+      await User.findByIdAndUpdate(subscription.user, { subscription: null });
+    }
+
+    await Subscription.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Souscription supprimée avec succès",
+    });
+  } catch (error) {
+    console.error(error);
+    next(new HttpError("Impossible de supprimer la souscription", 500));
+  }
+};
+
 module.exports = {
   selectSubscription,
   sendKey,
@@ -427,4 +452,5 @@ module.exports = {
   getAllSubscriptions,
   cancelSubscription,
   renewSubscription,
+  deleteSubscription,
 };

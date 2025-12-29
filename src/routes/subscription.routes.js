@@ -10,6 +10,7 @@ const {
   renewSubscription,
   sendKey,
   getAllSubscriptions,
+  deleteSubscription,
 } = require("../controllers/subscription.controller");
 const router = express.Router();
 
@@ -35,5 +36,6 @@ router.post("/renew/:id", auth, renewSubscription);
 
 router.post("/sendkey/:email", auth, role("admin"), sendKey);
 router.get("/all", auth, role("admin"), getAllSubscriptions);
+router.delete("/delete/:id", auth, role("admin"), deleteSubscription);
 
 module.exports = router;
