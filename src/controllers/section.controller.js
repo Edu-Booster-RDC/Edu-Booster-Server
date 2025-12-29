@@ -77,14 +77,8 @@ const getSections = async (req, res, next) => {
     await connectDB();
 
     const sections = await Section.find()
-      .populate({
-        path: "provinces",
-        select: "name courses",
-        populate: {
-          path: "courses",
-          select: "name",
-        },
-      })
+      .populate("provinces", "name")
+      .populate("courses", "name")
       .populate("addedby", "name email");
 
     res.status(200).json({
