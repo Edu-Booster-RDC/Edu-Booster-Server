@@ -8,6 +8,7 @@ const {
   sendActivationKey,
   sendSubscriptionKey,
 } = require("../services/sendMails");
+const Notification = require("../models/notification");
 
 const generateActivationKey = (userId) => {
   const prefix = "EDU-BOOSTER";
@@ -89,6 +90,14 @@ const selectSubscription = async (req, res, next) => {
       subscription.activationKey,
       formattedDate
     );
+
+    await Notification.create({
+      userId: user.id,
+      type: "message",
+      title: "Nouvelle souscription",
+      body: `${user.name} (${user.email}) a choisi le plan ${subscription.plan}. Clé d'activation: ${subscription.activationKey}`,
+      read: false,
+    });
 
     res.status(201).json({
       message: "Souscription créée avec succès",
