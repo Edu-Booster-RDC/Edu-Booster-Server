@@ -54,7 +54,7 @@ app.use("/api/cours", coursRoutes);
 app.use("/api/answer", answerRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/prediction", predictionRoutes);
-app.use("/api/notificatin", notificationRoutes);
+app.use("/api/notification", notificationRoutes);
 
 // error handling
 app.use(notFound);
