@@ -211,6 +211,34 @@ const publishCourse = async (req, res, next) => {
   }
 };
 
+const unpublishCourse = async (req, res, next) => {
+  try {
+    await connectDB();
+    const { courseId } = req.params;
+    const userId = req.user?.userId;
+
+    const course = await Course.findById(courseId);
+    if (!course) {
+      return next(new HttpError("Cours introuvable", 404));
+    }
+
+    if (course.createdBy.toString() !== userId && req.user?.role !== "admin") {
+      return next(new HttpError("Non autorisé", 403));
+    }
+
+    course.status = "draft";
+    await course.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Le cours a été dépublié avec succès",
+      course,
+    });
+  } catch (error) {
+    return next(new HttpError(error.message || "Erreur serveur", 500));
+  }
+};
+
 const getCourses = async (req, res, next) => {
   try {
     await connectDB();
@@ -415,4 +443,5 @@ module.exports = {
   updateCourse,
   deleteCourse,
   startCourse,
+  unpublishCourse,
 };

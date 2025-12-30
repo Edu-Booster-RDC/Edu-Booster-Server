@@ -10,6 +10,7 @@ const {
   deleteCourse,
   getCourses,
   startCourse,
+  unpublishCourse,
 } = require("../controllers/cour.controller");
 const upload = require("../middlewares/uploadPdf");
 const { getNextQuestion } = require("../controllers/question.controller");
@@ -23,6 +24,7 @@ router.post(
   addCourse
 );
 router.post("/admin/publish/:courseId", auth, role("admin"), publishCourse);
+router.post("/admin/unpublish/:courseId", auth, role("admin"), unpublishCourse);
 router.patch("/admin/update/:id", auth, role("admin"), updateCourse);
 router.delete("/admin/delete/:courseId", auth, role("admin"), deleteCourse);
 router.get("/admin/", auth, role("admin"), getCourses);
