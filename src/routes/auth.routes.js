@@ -22,7 +22,7 @@ router.post("/verify-email", verifyEmail);
 router.post("/new-email-verification-code", newVerificationCode);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
-router.post("/reset-password/:id", resetPassword);
+router.post("/reset-password/", resetPassword);
 router.post("/refresh-token", refreshToken);
 
 router.post("/logout", auth, logout);

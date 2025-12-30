@@ -361,15 +361,16 @@ const resetPassword = async (req, res, next) => {
   try {
     await connectDB();
     const { token, password, password2 } = req.body;
-    const { id } = req.params;
 
     if (!password || !password2) {
       return next(new HttpError("Les mots de passe sont requis", 422));
     }
 
-    const user = await User.findById(id);
+    const user = await User.findOne({
+      resetPasswordToken: token,
+    });
     if (!user) {
-      return next(new HttpError("Utilisateur introuvable", 404));
+      return next(new HttpError("Code invalide", 404));
     }
 
     if (!user.resetPasswordToken || !user.resetPasswordTokenExpiration) {
@@ -383,11 +384,6 @@ const resetPassword = async (req, res, next) => {
         message: "Le token a expiré, veuillez en demander un nouveau",
         email: user.email,
       });
-    }
-
-    const isValidToken = await compareToken(token, user.resetPasswordToken);
-    if (!isValidToken) {
-      return next(new HttpError("Token de réinitialisation invalide", 400));
     }
 
     if (password !== password2) {
