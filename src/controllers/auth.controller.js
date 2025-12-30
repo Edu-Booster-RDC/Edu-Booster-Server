@@ -51,7 +51,6 @@ const createAccount = async (req, res, next) => {
       password: hashedPass,
       emailCode: code,
       emailCodeExpiration: expiresAt,
-      googleId: null,
     });
 
     await user.save();

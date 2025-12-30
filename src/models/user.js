@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
     role: { type: String, enum: ["admin", "student"], default: "student" },
     password: { type: String, required: true },
     isActive: { type: Boolean, default: true },
-    googleId: { type: String, unique: true, sparse: true },
 
     phone: { type: String },
     phoneCode: { type: String },
