@@ -33,27 +33,15 @@ const addSection = async (req, res, next) => {
       );
     }
 
-    // Chercher une section existante par nom
-    let section = await Section.findOne({ name });
+    // Vérifier si la section existe déjà
+    const existingSection = await Section.findOne({ name });
 
-    if (section) {
-      // Ajouter uniquement les nouvelles provinces
-      const newProvinces = provinces.filter(
-        (p) => !section.provinces.includes(p)
-      );
-
-      section.provinces.push(...newProvinces);
-      await section.save();
-
-      return res.status(200).json({
-        success: true,
-        message: "Province(s) ajoutée(s) à la section existante",
-        section,
-      });
+    if (existingSection) {
+      return next(new HttpError("Une section avec ce nom existe déjà", 409));
     }
 
-    // Sinon créer une nouvelle section
-    section = new Section({
+    // Créer une nouvelle section
+    const section = new Section({
       name,
       addedby: user._id,
       provinces,
