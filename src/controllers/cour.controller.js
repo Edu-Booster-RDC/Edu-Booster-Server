@@ -215,7 +215,7 @@ const getCourses = async (req, res, next) => {
   try {
     await connectDB();
 
-    const courses = await Course.find();
+    const courses = await Course.find().populate("sections", "name");
 
     res.status(200).json({
       success: true,
