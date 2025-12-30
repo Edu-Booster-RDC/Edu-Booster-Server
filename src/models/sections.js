@@ -9,7 +9,7 @@ const sectionSchema = new mongoose.Schema(
     courses: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Cours",
+        ref: "Course",
         default: [],
       },
     ],
