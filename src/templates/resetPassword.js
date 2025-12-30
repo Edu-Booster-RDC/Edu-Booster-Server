@@ -49,26 +49,26 @@ const resetPasswordLink = (resetUrl, name) => `<!DOCTYPE html>
           <p style="font-size: 15px; line-height: 1.7">Bonjour, ${name},</p>
 
           <p style="font-size: 15px; line-height: 1.7">
-            Vous avez demandé à réinitialiser votre mot de passe. Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe :
+            Vous avez demandé à réinitialiser votre mot de passe. Voici un code reinnitialisation pour créer un nouveau mot de passe :
           </p>
 
+          
+
           <div style="text-align: center; margin: 30px 0">
-            <a
-              href="${resetUrl}"
-              target="_blank"
+            <span
               style="
                 display: inline-block;
                 background: #054175;
                 color: #ffffff;
                 padding: 15px 35px;
-                font-size: 18px;
+                font-size: 28px;
+                letter-spacing: 6px;
                 font-weight: 700;
                 border-radius: 6px;
-                text-decoration: none;
               "
             >
-              Réinitialiser le mot de passe
-            </a>
+              ${resetUrl}
+            </span>
           </div>
 
           <p style="font-size: 14px; font-weight: 500">

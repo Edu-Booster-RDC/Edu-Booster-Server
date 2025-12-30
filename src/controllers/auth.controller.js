@@ -333,26 +333,18 @@ const forgotPassword = async (req, res, next) => {
       return next(new HttpError("Adresse e-mail invalide", 404));
     }
 
-    const resetToken = generateRandomToken(32);
-    const saltRounds = 10;
-    const hashedToken = await bcrypt.hash(resetToken, saltRounds);
+    const { code } = generateCode();
     const expiration = generateExpiration(5);
 
-    user.resetPasswordToken = hashedToken;
+    user.resetPasswordToken = code;
     user.resetPasswordTokenExpiration = expiration;
     await user.save();
 
-    const resetUrl = `${
-      process.env.CLIENT_URL
-    }/auth/reset-password?token=${resetToken}&id=${
-      user._id
-    }&email=${encodeURIComponent(user.email)}`;
-
-    await sendResetPasswordLink(user.email, resetUrl, user.name);
+    await sendResetPasswordLink(user.email, user.resetPasswordToken, user.name);
 
     res.status(200).json({
       success: true,
-      message: `Un lien de réinitialisation du mot de passe a été envoyé à ${user.email}`,
+      message: `Un code de réinitialisation du mot de passe a été envoyé à ${user.email}`,
     });
   } catch (error) {
     console.error(error);
