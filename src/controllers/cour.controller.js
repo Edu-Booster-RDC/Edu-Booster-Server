@@ -324,21 +324,24 @@ const updateCourse = async (req, res, next) => {
     await connectDB();
 
     const { id } = req.params;
-    const { title, description } = req.body;
-
+    const { title, description, sections } = req.body;
     const course = await Course.findById(id);
     if (!course) {
       return next(new HttpError("Cours introuvable", 404));
     }
 
-    course.title = title;
-    course.description = description;
+    if (title !== undefined) course.title = title;
+    if (description !== undefined) course.description = description;
+    if (sections !== undefined && Array.isArray(sections)) {
+      course.sections = sections;
+    }
 
     await course.save();
 
     res.status(200).json({
       success: true,
       message: "Le cours a été mis à jour avec succès",
+      course,
     });
   } catch (error) {
     console.error("Erreur lors de la modification du cours :", error);
